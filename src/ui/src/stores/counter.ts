@@ -4,8 +4,11 @@ export const useCounterStore = defineStore({
   id: 'counter',
   state: () => ({
     counter: 0,
+    podList: [],
+    nodeList: [],
     pods: [],
-    nodes: []
+    nodes: [],
+    namespaces: []
   }),
   getters: {
     doubleCount: (state) => state.counter * 2

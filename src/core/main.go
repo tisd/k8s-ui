@@ -39,9 +39,13 @@ func main() {
 	r.Use(CORSMiddleware())
 
 	r.GET("/v1/api/pod", func(c *gin.Context) {
+		pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
+		if err != nil {
+			panic(err.Error())
+		}
 		c.JSON(200, gin.H{
 			"error": false,
-			"data":  getPods(clientset),
+			"data":  pods,
 		})
 	})
 
