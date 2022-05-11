@@ -17,7 +17,7 @@ import { darkTheme } from 'naive-ui'
         <n-layout-content content-style="padding: 24px;">
           <RouterView />
         </n-layout-content>
-        <n-layout-footer bordered>
+        <n-layout-footer id="drawer-target" bordered>
           k8s-ui
         </n-layout-footer>
       </n-layout>

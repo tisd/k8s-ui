@@ -5,29 +5,33 @@
         <n-grid x-gap="12" :cols="4">
           <n-gi>
             <n-card>
-              <n-statistic label="Nodes">
-                5
+              <n-statistic label="Pods">
+                {{ podList.length + "/" + nodeList.reduce((acc, node) => acc + parseInt(node.status.capacity.pods), 0) }}
               </n-statistic>
             </n-card>
           </n-gi>
           <n-gi>
             <n-card>
               <n-statistic label="Disk">
-                230GB
+                {{ Math.round(nodeList.reduce((acc, node) => acc + parseInt(node.status.capacity['ephemeral-storage']), 0) / 1024 /
+                    1024) + "GiB"
+                }}
               </n-statistic>
             </n-card>
           </n-gi>
           <n-gi>
             <n-card>
               <n-statistic label="Memory">
-                40GB
+                {{ Math.round(nodeList.reduce((acc, node) => acc + parseInt(node.status.capacity.memory), 0) / 1024 /
+                    1024) + "GiB"
+                }}
               </n-statistic>
             </n-card>
           </n-gi>
           <n-gi>
             <n-card>
               <n-statistic label="CPU">
-                24
+                {{ nodeList.reduce((acc, node) => acc + parseInt(node.status.capacity.cpu), 0) }}
               </n-statistic>
             </n-card>
           </n-gi>
@@ -64,6 +68,9 @@ import { defineComponent } from 'vue'
 import { NLayout, NLayoutSider, NLayoutHeader, NLayoutFooter, NLayoutContent, NCard, NGrid, NGi, NStatistic } from 'naive-ui'
 import CpuUsageGraph from '@/components/CpuUsageGraph.vue'
 import MemoryUsageGraph from '@/components/MemoryUsageGraph.vue'
+import { useCounterStore } from '@/stores/counter'
+import { storeToRefs } from "pinia"
+import { getPods, getNodes } from "../services/MainService"
 
 export default defineComponent({
   components: {
@@ -78,6 +85,16 @@ export default defineComponent({
     NStatistic,
     CpuUsageGraph,
     MemoryUsageGraph,
+  },
+  setup() {
+    const counter = useCounterStore()
+    const { podList, nodeList } = storeToRefs(counter)
+    getPods('all')
+    getNodes()
+    return {
+      podList,
+      nodeList,
+    }
   }
 })
 </script>

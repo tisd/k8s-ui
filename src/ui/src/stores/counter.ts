@@ -8,7 +8,8 @@ export const useCounterStore = defineStore({
     nodeList: [],
     pods: [],
     nodes: [],
-    namespaces: []
+    namespaces: [],
+    logs: ''
   }),
   getters: {
     doubleCount: (state) => state.counter * 2

@@ -8,7 +8,7 @@ export function getPods(namespace: string) {
     if (!response.error) {
       counter.$patch({
         podList: response.data,
-        pods: response.data.filter(pod => pod.metadata.namespace === namespace).map(item => {
+        pods: response.data.filter(pod => namespace === 'all' || pod.metadata.namespace === namespace).map(item => {
           return {
             name: item.metadata.name,
             ready: item.status.containerStatuses.filter(container => container.ready).length + "/" + item.status.containerStatuses.length,
@@ -64,8 +64,25 @@ export function getNamespaces() {
             label: item.metadata.name,
             value: item.metadata.name,
           }
+        }).concat({
+          label: "All",
+          value: "all",
         })
       })
     }
+  })
+}
+
+export function getPodLogs(podName: string, namespace: string) {
+  const counter = useCounterStore()
+  fetch("http://localhost:7000/v1/pod/" + podName + "/" + namespace + "/logs").then(response => response.json()).then(response => {
+      
+      if (!response.error) {
+        console.log(response.data);
+        
+        counter.$patch({
+          logs: response.data
+        })
+      }
   })
 }
