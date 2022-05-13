@@ -1,6 +1,13 @@
 <template>
   <n-space vertical :size="12">
     <n-card title="Nodes">
+      <template #header-extra>
+        <n-button @click="handleRefresh">
+          <n-icon>
+            <refresh-icon />
+          </n-icon>
+        </n-button>
+      </template>
       <n-data-table :bordered="false" :single-line="false" :columns="columns" :data="data" :pagination="pagination" />
     </n-card>
   </n-space>
@@ -8,12 +15,13 @@
 
 <script lang="ts">
 import { h, defineComponent } from 'vue'
-import { NTag, NButton, NSpace, NDataTable, NCard } from 'naive-ui'
-import { useCounterStore } from '@/stores/counter'
+import { NTag, NButton, NSpace, NDataTable, NCard, NIcon } from 'naive-ui'
+import { useResourcesStore } from '@/stores/resources'
 import { getNodes } from "../services/MainService"
 import { storeToRefs } from "pinia"
+import { Refresh as RefreshIcon } from '@vicons/ionicons5'
 
-const createColumns = ({ sendMail }) => {
+const createColumns = ({ handleView }) => {
   return [
     {
       title: 'Name',
@@ -22,7 +30,7 @@ const createColumns = ({ sendMail }) => {
     {
       title: 'Status',
       key: 'status',
-      render(row) {
+      render(row: any) {
         let type;
         switch (row.status) {
           case "Ready":
@@ -54,8 +62,8 @@ const createColumns = ({ sendMail }) => {
     {
       title: 'Roles',
       key: 'roles',
-      render(row) {
-        const tags = row.roles.map((tagKey) => {
+      render(row: any) {
+        const roles = row.roles.map((roleKey: any) => {
           return h(
             NTag,
             {
@@ -65,11 +73,11 @@ const createColumns = ({ sendMail }) => {
               type: 'info'
             },
             {
-              default: () => tagKey
+              default: () => roleKey
             }
           )
         })
-        return tags
+        return roles
       }
     },
     {
@@ -83,12 +91,12 @@ const createColumns = ({ sendMail }) => {
     {
       title: 'Action',
       key: 'actions',
-      render(row) {
+      render(row: any) {
         return h(
           NButton,
           {
             size: 'small',
-            onClick: () => sendMail(row)
+            onClick: () => handleView(row)
           },
           { default: () => 'View' }
         )
@@ -101,23 +109,29 @@ export default defineComponent({
   components: {
     NSpace,
     NDataTable,
-    NCard
+    NCard,
+    RefreshIcon,
+    NIcon,
+    NButton
   },
   setup() {
-    const counter = useCounterStore()
+    const resources = useResourcesStore()
     getNodes()
-    const { nodes } = storeToRefs(counter)
-    
+    const { nodes } = storeToRefs(resources)
+
     return {
       data: nodes,
       columns: createColumns({
-        sendMail(rowData) {
-          console.log("sendMail", rowData);
+        handleView(rowData: any) {
+          console.log("handleView", rowData);
 
         }
       }),
       pagination: {
         pageSize: 10
+      },
+      handleRefresh() {
+        getNodes()
       }
     }
   }

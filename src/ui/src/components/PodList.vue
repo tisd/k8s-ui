@@ -4,23 +4,16 @@
       <template #header-extra>
         <n-select v-model:value="selectedNamespace" :options="namespaces" @update:value="handleUpdateValue"
           style="min-width: 250px;" />
+        <n-button @click="handleRefresh" style="margin-left: 5px;">
+          <n-icon>
+            <refresh-icon />
+          </n-icon>
+        </n-button>
       </template>
-      <n-data-table ref="table" :bordered="false" :single-line="false" :columns="columns" :data="data"
+      <n-data-table ref="table" :bordered="false" :single-line="false"
+        :columns="selectedNamespace === 'all' ? columns : columns.filter(c => c.key !== 'namespace')" :data="data"
         :pagination="pagination" />
     </n-card>
-    <!-- <div id="drawer-target" style="
-      position: relative;
-      width: 100%;
-      height: 300px;
-      border: 1px solid rgba(128, 128, 128, 0.2);
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    ">
-      Target Area
-    </div> -->
     <n-drawer v-model:show="active" :width="200" :height="400" :placement="placement" :trap-focus="false"
       to="#drawer-target">
       <n-drawer-content title="Logs" closable>
@@ -32,17 +25,30 @@
 
 <script lang="ts">
 import { h, defineComponent, ref } from 'vue'
-import { NTag, NButton, NSpace, NDataTable, NCard, NSelect, NDrawer, NDrawerContent, NLog, type SelectOption, type DrawerPlacement } from 'naive-ui'
-import { useCounterStore } from '@/stores/counter'
+import { NTag, NAnchorLink, NButton, NIcon, NSpace, NDataTable, NCard, NSelect, NDrawer, NDrawerContent, NLog, type SelectOption, type DrawerPlacement } from 'naive-ui'
+import { useResourcesStore } from '@/stores/resources'
 import { getNamespaces, getPods, getPodLogs } from "../services/MainService"
 import { storeToRefs } from "pinia"
-import moment from 'moment';
+import { Refresh as RefreshIcon } from '@vicons/ionicons5'
 
-const createColumns = ({ sendMail }) => {
+const createColumns = ({ viewLogs }) => {
   return [
     {
       title: 'Name',
-      key: 'name'
+      key: 'name',
+      render(row: any) {
+        return h(
+          'a',
+          {
+            href: `/pods/${row.namespace}/${row.name}`,
+            innerHTML: row.name
+          }
+        )
+      }
+    },
+    {
+      title: 'Namespace',
+      key: 'namespace',
     },
     {
       title: 'Ready',
@@ -59,7 +65,7 @@ const createColumns = ({ sendMail }) => {
     {
       title: 'Status',
       key: 'status',
-      render(row) {
+      render(row: any) {
         let type;
         switch (row.status) {
           case "Running":
@@ -91,12 +97,12 @@ const createColumns = ({ sendMail }) => {
     {
       title: 'Action',
       key: 'actions',
-      render(row) {
+      render(row: any) {
         return h(
           NButton,
           {
             size: 'small',
-            onClick: () => sendMail(row)
+            onClick: () => viewLogs(row)
           },
           { default: () => 'View logs' }
         )
@@ -113,13 +119,17 @@ export default defineComponent({
     NSelect,
     NDrawer,
     NDrawerContent,
-    NLog
+    NLog,
+    NButton,
+    NIcon,
+    RefreshIcon
   },
   setup() {
-    const counter = useCounterStore()
-    getPods('default')
+    const resources = useResourcesStore()
+    const { pods, namespaces, logs, selectedNamespace } = storeToRefs(resources)
+
+    getPods(selectedNamespace.value)
     getNamespaces()
-    const { pods, namespaces, logs } = storeToRefs(counter)
 
     const active = ref(false)
     const placement = ref<DrawerPlacement>('bottom')
@@ -128,22 +138,24 @@ export default defineComponent({
       handleUpdateValue(value: string, option: SelectOption) {
         getPods(value)
       },
-      selectedNamespace: ref('default'),
+      selectedNamespace,
       namespaces: namespaces,
       data: pods,
       columns: createColumns({
-        sendMail(rowData) {
-          console.log("sendMail", rowData);
+        viewLogs(row: any) {
           active.value = true
-          getPodLogs(rowData.name, 'default')
+          getPodLogs(row.name, 'default')
         }
       }),
       pagination: {
-        pageSize: 10
+        pageSize: 15
       },
       active,
       placement,
-      logs
+      logs,
+      handleRefresh() {
+        getPods(selectedNamespace.value)
+      }
     }
   }
 })

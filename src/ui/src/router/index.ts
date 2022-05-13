@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '../views/DashboardView.vue'
-import PodsList from '../components/PodsList.vue'
-import NodeList from '../components/NodeList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,12 +12,22 @@ const router = createRouter({
     {
       path: '/pods',
       name: 'pods',
-      component: PodsList
+      component: () => import('@/components/PodList.vue')
+    },
+    {
+      path: '/pods/:namespace/:podName',
+      name: 'podView',
+      component: () => import('@/components/PodView.vue')
+    },
+    {
+      path: '/deployments',
+      name: 'deployments',
+      component: () => import('@/components/DeploymentList.vue')
     },
     {
       path: '/nodes',
       name: 'nodes',
-      component: NodeList
+      component: () => import('@/components/NodeList.vue')
     },
     {
       path: '/about',

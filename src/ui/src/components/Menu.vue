@@ -3,7 +3,7 @@
     <n-layout-sider bordered collapse-mode="width" :collapsed-width="64" :width="240" :collapsed="collapsed"
       show-trigger @collapse="collapsed = true" @expand="collapsed = false">
       <n-menu ref="menuInstRef" v-model:value="selectedKey" :collapsed="collapsed" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions"
-        key-field="whateverKey" label-field="whateverLabel" children-field="whateverChildren" />
+        key-field="key" label-field="label" children-field="whateverChildren" />
     </n-layout-sider>
     <n-layout />
   </n-layout>
@@ -15,9 +15,6 @@ import { NIcon, NMenu, NLayout, NLayoutSider } from 'naive-ui'
 import type { MenuOption, MenuInst } from 'naive-ui'
 import { RouterLink } from 'vue-router'
 import {
-  BookOutline as BookIcon,
-  PersonOutline as PersonIcon,
-  WineOutline as WineIcon,
   Cube,
   CubeOutline,
   Server,
@@ -26,8 +23,7 @@ import {
   Home,
   Settings,
   GitNetwork,
-  Cloud,
-  LaptopOutline
+  Cloud
 } from '@vicons/ionicons5'
 
 function renderIcon(icon: Component) {
@@ -36,7 +32,7 @@ function renderIcon(icon: Component) {
 
 const menuOptions: MenuOption[] = [
   {
-    whateverLabel: () =>
+    label: () =>
       h(
         RouterLink,
         {
@@ -46,16 +42,16 @@ const menuOptions: MenuOption[] = [
         },
         { default: () => 'Dashboard' }
       ),
-    whateverKey: 'dashboard',
+    key: 'dashboard',
     icon: renderIcon(Home),
   },
   {
-    whateverLabel: 'Workloads',
-    whateverKey: 'workloads',
+    label: 'Workloads',
+    key: 'workloads',
     icon: renderIcon(Cube),
     whateverChildren: [
       {
-        whateverLabel: () =>
+        label: () =>
           h(
             RouterLink,
             {
@@ -65,82 +61,91 @@ const menuOptions: MenuOption[] = [
             },
             { default: () => 'Pods' }
           ),
-        whateverKey: 'pods',
+        key: 'pods',
         icon: renderIcon(CubeOutline)
       },
       {
-        whateverLabel: 'Deployments',
-        whateverKey: 'deployments',
+        label: () =>
+          h(
+            RouterLink,
+            {
+              to: {
+                name: 'deployments'
+              }
+            },
+            { default: () => 'Deployments' }
+          ),
+        key: 'deployments',
         icon: renderIcon(CubeOutline)
       },
       {
-        whateverLabel: 'StatefulSets',
-        whateverKey: 'statefulsets',
+        label: 'StatefulSets',
+        key: 'statefulsets',
         icon: renderIcon(CubeOutline)
       },
       {
-        whateverLabel: 'DaemonSets',
-        whateverKey: 'daemonsets',
+        label: 'DaemonSets',
+        key: 'daemonsets',
         icon: renderIcon(CubeOutline)
       }
     ]
   },
   {
-    whateverLabel: 'Networking',
-    whateverKey: 'networking',
+    label: 'Networking',
+    key: 'networking',
     icon: renderIcon(GitNetwork),
     whateverChildren: [
       {
-        whateverLabel: 'Services',
-        whateverKey: 'services',
+        label: 'Services',
+        key: 'services',
         icon: renderIcon(CubeOutline)
       },
       {
-        whateverLabel: 'Ingresses',
-        whateverKey: 'ingresses',
+        label: 'Ingresses',
+        key: 'ingresses',
         icon: renderIcon(CubeOutline)
       }
     ]
   },
   {
-    whateverLabel: 'Storage',
-    whateverKey: 'storage',
+    label: 'Storage',
+    key: 'storage',
     icon: renderIcon(Server),
     whateverChildren: [
       {
-        whateverLabel: 'Config Maps',
-        whateverKey: 'configmaps',
+        label: 'Config Maps',
+        key: 'configmaps',
         icon: renderIcon(CubeOutline)
       },
       {
-        whateverLabel: 'Persistant Volume Claims',
-        whateverKey: 'persistantvolumeclaims',
+        label: 'Persistant Volume Claims',
+        key: 'persistantvolumeclaims',
         icon: renderIcon(CubeOutline)
       },
       {
-        whateverLabel: 'Persistant Volumes',
-        whateverKey: 'persistantvolumes',
+        label: 'Persistant Volumes',
+        key: 'persistantvolumes',
         icon: renderIcon(CubeOutline)
       },
       {
-        whateverLabel: 'Secrets',
-        whateverKey: 'secrets',
+        label: 'Secrets',
+        key: 'secrets',
         icon: renderIcon(CubeOutline)
       },
       {
-        whateverLabel: 'Storage Classes',
-        whateverKey: 'storageclasses',
+        label: 'Storage Classes',
+        key: 'storageclasses',
         icon: renderIcon(CubeOutline)
       },
     ]
   },
   {
-    whateverLabel: 'Cluster',
-    whateverKey: 'cluster',
+    label: 'Cluster',
+    key: 'cluster',
     icon: renderIcon(Cloud),
     whateverChildren: [
       {
-        whateverLabel: () =>
+        label: () =>
           h(
             RouterLink,
             {
@@ -150,39 +155,39 @@ const menuOptions: MenuOption[] = [
             },
             { default: () => 'Nodes' }
           ),
-        whateverKey: 'nodes',
+        key: 'nodes',
         icon: renderIcon(LogoTux),
       },
       {
-        whateverLabel: 'Namespaces',
-        whateverKey: 'namespaces',
+        label: 'Namespaces',
+        key: 'namespaces',
         icon: renderIcon(Settings)
       },
       {
-        whateverLabel: 'Roles',
-        whateverKey: 'roles',
+        label: 'Roles',
+        key: 'roles',
         icon: renderIcon(Settings)
       },
       {
-        whateverLabel: 'Role Bindings',
-        whateverKey: 'rolebindings',
+        label: 'Role Bindings',
+        key: 'rolebindings',
         icon: renderIcon(Settings)
       },
       {
-        whateverLabel: 'Service Accounts',
-        whateverKey: 'serviceaccounts',
+        label: 'Service Accounts',
+        key: 'serviceaccounts',
         icon: renderIcon(Settings)
       },
       {
-        whateverLabel: 'Terminal',
-        whateverKey: 'terminal',
+        label: 'Terminal',
+        key: 'terminal',
         icon: renderIcon(TerminalOutline)
       }
     ]
   },
   {
-    whateverLabel: 'Settings',
-    whateverKey: 'settings',
+    label: 'Settings',
+    key: 'settings',
     icon: renderIcon(Settings)
   }
 ]

@@ -8,10 +8,13 @@ kc.loadFromDefault();
 
 app.use(cors());
 
-const k8sApi = kc.makeApiClient(k8s.CoreV1Api);
+const coreV1Api = kc.makeApiClient(k8s.CoreV1Api);
+const appsV1Api = kc.makeApiClient(k8s.AppsV1Api);
+
+// Pods
 
 app.get('/v1/pod', async (req, res) => {
-    const response = (await k8sApi.listNamespacedPod('')).response;
+    const response = (await coreV1Api.listNamespacedPod('')).response;
     if (response.statusCode !== 200) {
         return res.json({
             error: true,
@@ -26,38 +29,8 @@ app.get('/v1/pod', async (req, res) => {
 
 });
 
-app.get('/v1/node', async (req, res) => {
-    const response = (await k8sApi.listNode()).response;
-    if (response.statusCode !== 200) {
-        return res.json({
-            error: true,
-            message: 'Error fetching nodes'
-        });
-    }
-
-    res.json({
-        error: false,
-        data: response.body.items
-    });
-});
-
-app.get('/v1/namespace', async (req, res) => {
-    const response = (await k8sApi.listNamespace()).response;
-    if (response.statusCode !== 200) {
-        return res.json({
-            error: true,
-            message: 'Error fetching namespaces'
-        });
-    }
-
-    res.json({
-        error: false,
-        data: response.body.items
-    });
-});
-
-app.get('/v1/pod/:podName/:namespace/logs', async (req, res) => {
-    const response = (await k8sApi.readNamespacedPodLog(req.params.podName, req.params.namespace, {})).response;
+app.get('/v1/pod/:namespace/:podName//logs', async (req, res) => {
+    const response = (await coreV1Api.readNamespacedPodLog(req.params.podName, req.params.namespace, {})).response;
     if (response.statusCode !== 200) {
         return res.json({
             error: true,
@@ -71,8 +44,74 @@ app.get('/v1/pod/:podName/:namespace/logs', async (req, res) => {
     });
 });
 
+app.get('/v1/pod/:namespace/:podName/', async (req, res) => {
+    const response = (await coreV1Api.readNamespacedPod(req.params.podName, req.params.namespace)).response;
+    if (response.statusCode !== 200) {
+        return res.json({
+            error: true,
+            message: 'Error fetching pod'
+        });
+    }
 
-k8sApi.listNamespacedPod('default').then((res) => {
+    res.json({
+        error: false,
+        data: response.body
+    });
+});
+
+// Deployments
+
+app.get('/v1/deployment', async (req, res) => {
+    const response = (await appsV1Api.listDeploymentForAllNamespaces('')).response;
+    if (response.statusCode !== 200) {
+        return res.json({
+            error: true,
+            message: 'Error fetching deployments'
+        });
+    }
+
+    res.json({
+        error: false,
+        data: response.body.items
+    });
+
+});
+
+// Nodes
+
+app.get('/v1/node', async (req, res) => {
+    const response = (await coreV1Api.listNode()).response;
+    if (response.statusCode !== 200) {
+        return res.json({
+            error: true,
+            message: 'Error fetching nodes'
+        });
+    }
+
+    res.json({
+        error: false,
+        data: response.body.items
+    });
+});
+
+// Namespaces
+
+app.get('/v1/namespace', async (req, res) => {
+    const response = (await coreV1Api.listNamespace()).response;
+    if (response.statusCode !== 200) {
+        return res.json({
+            error: true,
+            message: 'Error fetching namespaces'
+        });
+    }
+
+    res.json({
+        error: false,
+        data: response.body.items
+    });
+});
+
+coreV1Api.listNamespacedPod('default').then((res) => {
     console.log(res.body);
 });
 

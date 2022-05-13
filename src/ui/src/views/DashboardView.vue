@@ -6,14 +6,19 @@
           <n-gi>
             <n-card>
               <n-statistic label="Pods">
-                {{ podList.length + "/" + nodeList.reduce((acc, node) => acc + parseInt(node.status.capacity.pods), 0) }}
+                <span>
+                  {{ podList.length + "/" + nodeList.reduce((acc, node) => acc +
+                      parseInt(node.status.capacity.pods), 0)
+                  }}
+                </span>
               </n-statistic>
             </n-card>
           </n-gi>
           <n-gi>
             <n-card>
               <n-statistic label="Disk">
-                {{ Math.round(nodeList.reduce((acc, node) => acc + parseInt(node.status.capacity['ephemeral-storage']), 0) / 1024 /
+                {{ Math.round(nodeList.reduce((acc, node) => acc + parseInt(node.status.capacity['ephemeral-storage']),
+                    0) / 1024 /
                     1024) + "GiB"
                 }}
               </n-statistic>
@@ -68,7 +73,7 @@ import { defineComponent } from 'vue'
 import { NLayout, NLayoutSider, NLayoutHeader, NLayoutFooter, NLayoutContent, NCard, NGrid, NGi, NStatistic } from 'naive-ui'
 import CpuUsageGraph from '@/components/CpuUsageGraph.vue'
 import MemoryUsageGraph from '@/components/MemoryUsageGraph.vue'
-import { useCounterStore } from '@/stores/counter'
+import { useResourcesStore } from '@/stores/resources'
 import { storeToRefs } from "pinia"
 import { getPods, getNodes } from "../services/MainService"
 
@@ -87,8 +92,8 @@ export default defineComponent({
     MemoryUsageGraph,
   },
   setup() {
-    const counter = useCounterStore()
-    const { podList, nodeList } = storeToRefs(counter)
+    const resources = useResourcesStore()
+    const { podList, nodeList } = storeToRefs(resources)
     getPods('all')
     getNodes()
     return {
