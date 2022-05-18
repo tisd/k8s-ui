@@ -1,6 +1,6 @@
 <template>
   <div class="resource-view">
-    <n-card title="Metadata" v-if="pod && pod.metadata">
+    <n-card :title="pod.metadata.name" v-if="pod && pod.metadata">
       <n-space>
         <n-statistic label="Name" :value="pod.metadata.name" />
         <n-statistic label="Namespace" :value="pod.metadata.namespace" />
@@ -12,13 +12,11 @@
       <n-space>
         <n-statistic label="Labels">
           <span v-for="label in Object.keys(pod.metadata.labels)">
-            <n-tag style="margin-right: 5px;">{{ label }} : {{ pod.metadata.labels[label] }}</n-tag>
+            <n-tag style="margin-right: 5px;">{{ label }} = {{ pod.metadata.labels[label] }}</n-tag>
           </span>
         </n-statistic>
       </n-space>
-    </n-card>
-    <br>
-    <n-card title="Resource information" v-if="pod && pod.metadata">
+      <br>
       <n-space>
         <n-statistic label="Node" :value="pod.spec.nodeName" />
         <n-statistic label="Status" :value="pod.status.phase" />
@@ -27,35 +25,27 @@
         <n-statistic label="Restarts" :value="pod.status.containerStatuses[0].restartCount" />
         <n-statistic label="Service Account" :value="pod.spec.serviceAccount" />
       </n-space>
+      <h4>Conditions</h4>
+      <n-space>
+        <n-timeline horizontal>
+          <n-timeline-item v-for="condition in pod.status.conditions" type="success"
+            :time="moment(condition.lastTransitionTime).fromNow()" :content="condition.type" />
+        </n-timeline>
+      </n-space>
+      <div>
+        <h4>Controlled by</h4>
+        <n-space>
+          <n-statistic label="Name" :value="pod.metadata.ownerReferences[0].name" />
+          <n-statistic label="Kind" :value="pod.metadata.ownerReferences[0].kind" />
+        </n-space>
+      </div>
     </n-card>
     <br>
-    <n-card title="Conditions" v-if="pod && pod.metadata">
-      <n-table :single-line="false">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Last probe time</th>
-            <th>Last transition time</th>
-            <th>Reason</th>
-            <th>Message</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="condition in pod.status.conditions">
-            <td>{{ condition.type }}</td>
-            <td>{{ condition.status }}</td>
-            <td>{{ condition.lastProbeTime ? moment(condition.lastProbeTime).fromNow() : '-' }}</td>
-            <td>{{ moment(condition.lastTransitionTime).fromNow() }}</td>
-            <td>{{ condition.reason ? condition.reason : '-' }}</td>
-            <td>{{ condition.message ? condition.message : '-' }}</td>
-          </tr>
-        </tbody>
-      </n-table>
-    </n-card>
-    <br>
-    <n-card title="Controlled by" v-if="pod && pod.metadata">
-
+    <n-card title="Events" v-if="podEvents && podEvents.length">
+      <n-timeline>
+        <n-timeline-item v-for="e in podEvents" type="success" :time="moment(e.firstTimestamp).fromNow()"
+          :content="e.message" />
+      </n-timeline>
     </n-card>
   </div>
 </template>
@@ -63,10 +53,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { storeToRefs } from "pinia"
-import { NSpace, NCard, NStatistic, NTag, NTable } from 'naive-ui'
+import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem } from 'naive-ui'
 import { useResourcesStore } from '@/stores/resources'
 import { useRoute } from 'vue-router'
-import { getPod } from '../services/MainService'
+import { getPod, getPodEvents } from '../services/MainService'
 import moment from 'moment'
 
 export default defineComponent({
@@ -76,6 +66,8 @@ export default defineComponent({
     NStatistic,
     NTag,
     NTable,
+    NTimeline,
+    NTimelineItem,
   },
   methods: {
     moment
@@ -83,11 +75,13 @@ export default defineComponent({
   setup() {
     const route = useRoute()
     const resources = useResourcesStore()
-    const { pod } = storeToRefs(resources)
+    const { pod, podEvents } = storeToRefs(resources)
     getPod(route.params.namespace, route.params.podName)
+    getPodEvents(route.params.namespace, route.params.podName)
 
     return {
-      pod
+      pod,
+      podEvents,
     }
   }
 })

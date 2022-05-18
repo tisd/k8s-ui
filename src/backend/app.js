@@ -59,6 +59,25 @@ app.get('/v1/pod/:namespace/:podName/', async (req, res) => {
     });
 });
 
+app.get('/v1/pod/:namespace/:podName/events', async (req, res) => {
+    console.log(req.params.namespace, req.params.podName);
+    const response = (await coreV1Api.listNamespacedEvent(req.params.namespace, {
+        fieldSelector: `involvedObject.name=${req.params.podName}`
+    })).response;
+
+    if (response.statusCode !== 200) {
+        return res.json({
+            error: true,
+            message: 'Error fetching pod events'
+        });
+    }
+
+    res.json({
+        error: false,
+        data: response.body.items
+    });
+});
+
 // Deployments
 
 app.get('/v1/deployment', async (req, res) => {

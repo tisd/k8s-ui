@@ -31,10 +31,19 @@ export function getPod(namespace: string, name: string) {
   const resources = useResourcesStore()
   fetch("http://localhost:7000/v1/pod/" + namespace + "/" + name).then(response => response.json()).then(response => {
     if (!response.error) {
-      console.log(response.data);
-      
       resources.$patch({
         pod: response.data
+      })
+    }
+  })
+}
+
+export function getPodEvents(namespace: string, name: string) {
+  const resources = useResourcesStore()
+  fetch("http://localhost:7000/v1/pod/" + namespace + "/" + name + "/events").then(response => response.json()).then(response => {
+    if (!response.error) {
+      resources.$patch({
+        podEvents: response.data.filter(event => event.involvedObject.name === name)
       })
     }
   })
