@@ -29,7 +29,16 @@ const createColumns = ({ handleView }) => {
   return [
     {
       title: 'Name',
-      key: 'name'
+      key: 'name',
+      render(row: any) {
+        return h(
+          'a',
+          {
+            href: `/deployments/${row.namespace}/${row.name}`,
+            innerHTML: row.name
+          }
+        )
+      }
     },
     {
       title: 'Namespace',

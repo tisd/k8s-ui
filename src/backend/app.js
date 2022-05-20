@@ -96,6 +96,23 @@ app.get('/v1/deployment', async (req, res) => {
 
 });
 
+// get deployment
+
+app.get('/v1/deployment/:namespace/:deploymentName', async (req, res) => {
+    const response = (await appsV1Api.readNamespacedDeployment(req.params.deploymentName, req.params.namespace)).response;
+    if (response.statusCode !== 200) {
+        return res.json({
+            error: true,
+            message: 'Error fetching deployment'
+        });
+    }
+
+    res.json({
+        error: false,
+        data: response.body
+    });
+});
+
 // Nodes
 
 app.get('/v1/node', async (req, res) => {

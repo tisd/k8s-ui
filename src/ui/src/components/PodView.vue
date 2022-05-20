@@ -9,13 +9,6 @@
         <n-statistic label="Age" :value="moment(pod.metadata.creationTimestamp).fromNow()" />
         <n-statistic label="UID" :value="pod.metadata.uid" />
       </n-space>
-      <n-space>
-        <n-statistic label="Labels">
-          <span v-for="label in Object.keys(pod.metadata.labels)">
-            <n-tag style="margin-right: 5px;">{{ label }} = {{ pod.metadata.labels[label] }}</n-tag>
-          </span>
-        </n-statistic>
-      </n-space>
       <br>
       <n-space>
         <n-statistic label="Node" :value="pod.spec.nodeName" />
@@ -24,6 +17,13 @@
         <n-statistic label="QoS Class" :value="pod.status.qosClass" />
         <n-statistic label="Restarts" :value="pod.status.containerStatuses[0].restartCount" />
         <n-statistic label="Service Account" :value="pod.spec.serviceAccount" />
+      </n-space>
+      <n-space>
+        <n-statistic label="Labels">
+          <span v-for="label in Object.keys(pod.metadata.labels)">
+            <n-tag style="margin-right: 5px;">{{ label }} = {{ pod.metadata.labels[label] }}</n-tag>
+          </span>
+        </n-statistic>
       </n-space>
       <h4>Conditions</h4>
       <n-space>

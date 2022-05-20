@@ -13,6 +13,7 @@ export const useResourcesStore = defineStore({
     namespaces: [],
     deploymentList: [],
     deployments: [],
+    deployment: {},
     logs: '',
     selectedNamespace: 'default'
   }),

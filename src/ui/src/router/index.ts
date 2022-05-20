@@ -20,6 +20,11 @@ const router = createRouter({
       component: () => import('@/components/PodView.vue')
     },
     {
+      path: '/deployments/:namespace/:deploymentName',
+      name: 'deploymentView',
+      component: () => import('@/components/DeploymentView.vue')
+    },
+    {
       path: '/deployments',
       name: 'deployments',
       component: () => import('@/components/DeploymentList.vue')

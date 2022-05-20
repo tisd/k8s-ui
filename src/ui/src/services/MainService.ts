@@ -78,6 +78,18 @@ export function getDeployments(namespace: string) {
   })
 }
 
+export function getDeployment(namespace: string, name: string) {
+  const resources = useResourcesStore()
+  fetch("http://localhost:7000/v1/deployment/" + namespace + "/" + name).then(response => response.json()).then(response => {
+    if (!response.error) {
+      console.log(response.data);
+      resources.$patch({
+        deployment: response.data
+      })
+    }
+  })
+}
+
 export function getNodes() {
   const resources = useResourcesStore()
   fetch("http://localhost:7000/v1/node").then(response => response.json()).then(response => {
