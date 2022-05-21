@@ -96,8 +96,6 @@ app.get('/v1/deployment', async (req, res) => {
 
 });
 
-// get deployment
-
 app.get('/v1/deployment/:namespace/:deploymentName', async (req, res) => {
     const response = (await appsV1Api.readNamespacedDeployment(req.params.deploymentName, req.params.namespace)).response;
     if (response.statusCode !== 200) {
@@ -110,6 +108,23 @@ app.get('/v1/deployment/:namespace/:deploymentName', async (req, res) => {
     res.json({
         error: false,
         data: response.body
+    });
+});
+
+// Services
+
+app.get('/v1/service', async (req, res) => {
+    const response = (await coreV1Api.listNamespacedService('')).response;
+    if (response.statusCode !== 200) {
+        return res.json({
+            error: true,
+            message: 'Error fetching services'
+        });
+    }
+
+    res.json({
+        error: false,
+        data: response.body.items
     });
 });
 

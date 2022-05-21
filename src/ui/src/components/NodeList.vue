@@ -25,7 +25,16 @@ const createColumns = ({ handleView }) => {
   return [
     {
       title: 'Name',
-      key: 'name'
+      key: 'name',
+      render(row: any) {
+        return h(
+          'a',
+          {
+            href: `/nodes/${row.name}`,
+            innerHTML: row.name
+          }
+        )
+      }
     },
     {
       title: 'Status',
@@ -87,20 +96,6 @@ const createColumns = ({ handleView }) => {
     {
       title: 'Version',
       key: 'version'
-    },
-    {
-      title: 'Action',
-      key: 'actions',
-      render(row: any) {
-        return h(
-          NButton,
-          {
-            size: 'small',
-            onClick: () => handleView(row)
-          },
-          { default: () => 'View' }
-        )
-      }
     }
   ]
 }

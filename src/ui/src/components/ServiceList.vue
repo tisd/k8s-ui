@@ -1,6 +1,6 @@
 <template>
   <n-space vertical :size="12">
-    <n-card title="Deployments">
+    <n-card title="Services">
       <template #header-extra>
         <n-select v-model:value="selectedNamespace" :options="namespaces" @update:value="handleUpdateValue"
           style="min-width: 250px;" />
@@ -11,7 +11,8 @@
         </n-button>
       </template>
       <n-data-table ref="table" :bordered="false" :single-line="false"
-        :columns="selectedNamespace === 'all' ? columns : columns.filter(c => c.key !== 'namespace')" :data="data"
+        :columns="selectedNamespace === 'all' ? columns : columns.filter(c => c.key !== 'namespace')"
+        :data="serviceList.filter(s => selectedNamespace === 'all' || s.metadata.namespace === selectedNamespace)"
         :pagination="pagination" />
     </n-card>
   </n-space>
@@ -21,7 +22,7 @@
 import { h, defineComponent, ref } from 'vue'
 import { NTag, NButton, NIcon, NSpace, NDataTable, NCard, NSelect, NDrawer, NDrawerContent, NLog, type SelectOption } from 'naive-ui'
 import { useResourcesStore } from '@/stores/resources'
-import { getNamespaces, getDeployments } from "../services/MainService"
+import { getNamespaces, getServices } from "../services/MainService"
 import { storeToRefs } from "pinia"
 import { Refresh as RefreshIcon } from '@vicons/ionicons5'
 
@@ -34,31 +35,44 @@ const createColumns = ({ handleView }) => {
         return h(
           'a',
           {
-            href: `/deployments/${row.namespace}/${row.name}`,
-            innerHTML: row.name
+            href: `/services/${row.metadata.namespace}/${row.metadata.name}`,
+            innerHTML: row.metadata.name
           }
         )
       }
     },
     {
       title: 'Namespace',
-      key: 'namespace',
+      key: 'metadata.namespace',
     },
     {
-      title: 'Ready',
-      key: 'ready'
+      title: 'Type',
+      key: 'spec.type',
     },
     {
-      title: 'Up to Date',
-      key: 'upToDateReplicas'
+      title: 'Cluster IP',
+      key: 'spec.clusterIP',
     },
     {
-      title: 'Available',
-      key: 'availableReplicas'
-    },
-    {
-      title: 'Age',
-      key: 'age'
+      title: 'Ports',
+      key: 'ports',
+      render(row: any) {
+        return row.spec.ports.map(port => {
+          return h(
+            NTag,
+            {
+              style: {
+                marginRight: '6px',
+                marginBottom: '3px'
+              },
+              type: 'info'
+            },
+            {
+              default: () => `${port.port}:${port.targetPort}/${port.protocol}`
+            }
+          )
+        })
+      }
     }
   ]
 }
@@ -78,18 +92,18 @@ export default defineComponent({
   },
   setup() {
     const resources = useResourcesStore()
-    const { deployments, namespaces, selectedNamespace } = storeToRefs(resources)
+    const { serviceList, namespaces, selectedNamespace } = storeToRefs(resources)
 
-    getDeployments(selectedNamespace.value)
+    getServices()
     getNamespaces()
 
     return {
       handleUpdateValue(value: string, option: SelectOption) {
-        getDeployments(value)
+        getServices()
       },
       selectedNamespace,
-      namespaces: namespaces,
-      data: deployments,
+      namespaces,
+      serviceList,
       columns: createColumns({
         handleView(row: any) {
           console.info("handleView")
@@ -99,7 +113,7 @@ export default defineComponent({
         pageSize: 15
       },
       handleRefresh() {
-        getDeployments(selectedNamespace.value)
+        getServices()
       }
     }
   }

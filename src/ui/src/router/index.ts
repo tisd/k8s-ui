@@ -17,17 +17,22 @@ const router = createRouter({
     {
       path: '/pods/:namespace/:podName',
       name: 'podView',
-      component: () => import('@/components/PodView.vue')
+      component: () => import('@/components/itemviews/PodView.vue')
     },
     {
       path: '/deployments/:namespace/:deploymentName',
       name: 'deploymentView',
-      component: () => import('@/components/DeploymentView.vue')
+      component: () => import('@/components/itemviews/DeploymentView.vue')
     },
     {
       path: '/deployments',
       name: 'deployments',
       component: () => import('@/components/DeploymentList.vue')
+    },
+    {
+      path: '/services',
+      name: 'services',
+      component: () => import('@/components/ServiceList.vue')
     },
     {
       path: '/nodes',

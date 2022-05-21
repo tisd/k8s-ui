@@ -20,7 +20,7 @@ import { darkTheme } from 'naive-ui'
         </n-layout-header>
         <n-global-style />
         <n-layout has-sider>
-          <n-layout-sider bordered content-style="padding: 24px; height: 96vh;">
+          <n-layout-sider bordered content-style="padding: 24px; height: 95vh;">
             <Menu />
           </n-layout-sider>
           <n-layout content-style="padding: 24px; display: flex; flex-direction: column;">

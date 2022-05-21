@@ -56,7 +56,7 @@ import { storeToRefs } from "pinia"
 import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem } from 'naive-ui'
 import { useResourcesStore } from '@/stores/resources'
 import { useRoute } from 'vue-router'
-import { getPod, getPodEvents } from '../services/MainService'
+import { getPod, getPodEvents } from '../../services/MainService'
 import moment from 'moment'
 
 export default defineComponent({

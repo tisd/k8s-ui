@@ -90,13 +90,22 @@ export function getDeployment(namespace: string, name: string) {
   })
 }
 
+export function getServices() {
+  const resources = useResourcesStore()
+  fetch("http://localhost:7000/v1/service").then(response => response.json()).then(response => {
+    if (!response.error) {
+      resources.$patch({
+        serviceList: response.data
+      })
+    }
+  })
+}
+
 export function getNodes() {
   const resources = useResourcesStore()
   fetch("http://localhost:7000/v1/node").then(response => response.json()).then(response => {
 
     if (!response.error) {
-      console.log(response);
-
       resources.$patch({
         nodeList: response.data,
         nodes: response.data.map(item => {

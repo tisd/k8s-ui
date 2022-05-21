@@ -96,7 +96,16 @@ const menuOptions: MenuOption[] = [
     icon: renderIcon(GitNetwork),
     whateverChildren: [
       {
-        label: 'Services',
+        label: () =>
+          h(
+            RouterLink,
+            {
+              to: {
+                name: 'services'
+              }
+            },
+            { default: () => 'Services' }
+          ),
         key: 'services',
         icon: renderIcon(CubeOutline)
       },
