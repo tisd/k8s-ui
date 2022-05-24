@@ -168,9 +168,18 @@ const menuOptions: MenuOption[] = [
         icon: renderIcon(LogoTux),
       },
       {
-        label: 'Namespaces',
+        label: () =>
+          h(
+            RouterLink,
+            {
+              to: {
+                name: 'namespaces'
+              }
+            },
+            { default: () => 'Namespaces' }
+          ),
         key: 'namespaces',
-        icon: renderIcon(Settings)
+        icon: renderIcon(Settings),
       },
       {
         label: 'Roles',

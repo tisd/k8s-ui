@@ -40,6 +40,11 @@ const router = createRouter({
       component: () => import('@/components/NodeList.vue')
     },
     {
+      path: '/namespaces',
+      name: 'namespaces',
+      component: () => import('@/components/NamespaceList.vue')
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting

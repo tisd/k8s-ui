@@ -11,6 +11,7 @@ export const useResourcesStore = defineStore({
     podEvents: [],
     nodes: [],
     namespaces: [],
+    namespaceList: [],
     deploymentList: [],
     deployments: [],
     deployment: {},

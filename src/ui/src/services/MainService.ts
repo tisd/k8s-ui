@@ -131,6 +131,7 @@ export function getNamespaces() {
 
     if (!response.error) {
       resources.$patch({
+        namespaceList: response.data,
         namespaces: response.data.map(item => {
           return {
             label: item.metadata.name,
@@ -146,7 +147,7 @@ export function getNamespaces() {
 }
 
 export function getPodLogs(podName: string, namespace: string) {
-  const resources = useCounterStore()
+  const resources = useResourcesStore()
   fetch("http://localhost:7000/v1/pod/" + podName + "/" + namespace + "/logs").then(response => response.json()).then(response => {
 
     if (!response.error) {
