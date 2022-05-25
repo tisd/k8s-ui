@@ -148,7 +148,7 @@ export function getNamespaces() {
 
 export function getPodLogs(podName: string, namespace: string) {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/pod/" + podName + "/" + namespace + "/logs").then(response => response.json()).then(response => {
+  fetch("http://localhost:7000/v1/pod/" + namespace + "/" + podName + "/logs").then(response => response.json()).then(response => {
 
     if (!response.error) {
       resources.$patch({

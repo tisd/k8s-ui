@@ -8,7 +8,7 @@
           </n-icon>
         </n-button>
       </template>
-      <n-data-table :bordered="false" :single-line="false" :columns="columns" :data="data" :pagination="pagination" />
+      <n-data-table :bordered="false" :single-line="false" :columns="columns" :data="namespaceList" :pagination="pagination" />
     </n-card>
   </n-space>
 </template>
@@ -17,62 +17,22 @@
 import { h, defineComponent } from 'vue'
 import { NTag, NButton, NSpace, NDataTable, NCard, NIcon } from 'naive-ui'
 import { useResourcesStore } from '@/stores/resources'
-import { getNodes } from "../services/MainService"
+import { getNamespaces } from "../../services/MainService"
 import { storeToRefs } from "pinia"
 import { Refresh as RefreshIcon } from '@vicons/ionicons5'
+import moment from 'moment'
 
 const createColumns = ({ handleView }) => {
   return [
     {
       title: 'Name',
-      key: 'name',
-      render(row: any) {
-        return h(
-          'a',
-          {
-            href: `/nodes/${row.name}`,
-            innerHTML: row.name
-          }
-        )
-      }
+      key: 'metadata.name'
     },
     {
-      title: 'Status',
-      key: 'status',
+      title: 'Labels',
+      key: 'labels',
       render(row: any) {
-        let type;
-        switch (row.status) {
-          case "Ready":
-            type = "success"
-            break;
-          case "Not Ready":
-            type = "error"
-            break;
-          case "Pending":
-            type = "warning"
-            break;
-          default:
-            break;
-        }
-        return h(
-          NTag,
-          {
-            style: {
-              marginRight: '6px'
-            },
-            type: type
-          },
-          {
-            default: () => row.status
-          }
-        )
-      }
-    },
-    {
-      title: 'Roles',
-      key: 'roles',
-      render(row: any) {
-        const roles = row.roles.map((roleKey: any) => {
+        const labels = Object.keys(row.metadata.labels).map((labelKey: string) => {
           return h(
             NTag,
             {
@@ -82,21 +42,41 @@ const createColumns = ({ handleView }) => {
               type: 'info'
             },
             {
-              default: () => roleKey
+              default: () => labelKey + '=' + row.metadata.labels[labelKey]
             }
           )
         })
-        return roles
+        return labels
       }
     },
     {
       title: 'Age',
-      key: 'age'
+      key: 'age',
+      render(row: any) {
+        return h(
+          'span',
+          {
+            innerHTML: moment(row.metadata.creationTimestamp).fromNow()
+          }
+        )
+      }
     },
     {
-      title: 'Version',
-      key: 'version'
-    }
+      title: 'Created',
+      key: 'created',
+      render(row: any) {
+        return h(
+          'span',
+          {
+            innerHTML: moment(row.metadata.creationTimestamp).format('MMMM Do, YYYY - HH:mm:ss')
+          }
+        )
+      }
+    },
+    {
+      title: 'Status',
+      key: 'status.phase'
+    },
   ]
 }
 
@@ -111,11 +91,11 @@ export default defineComponent({
   },
   setup() {
     const resources = useResourcesStore()
-    getNodes()
-    const { nodes } = storeToRefs(resources)
+    getNamespaces()
+    const { namespaceList } = storeToRefs(resources)
 
     return {
-      data: nodes,
+      namespaceList,
       columns: createColumns({
         handleView(rowData: any) {
           console.log("handleView", rowData);
@@ -126,7 +106,7 @@ export default defineComponent({
         pageSize: 10
       },
       handleRefresh() {
-        getNodes()
+        getNamespaces()
       }
     }
   }

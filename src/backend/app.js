@@ -29,7 +29,7 @@ app.get('/v1/pod', async (req, res) => {
 
 });
 
-app.get('/v1/pod/:namespace/:podName//logs', async (req, res) => {
+app.get('/v1/pod/:namespace/:podName/logs', async (req, res) => {
     const response = (await coreV1Api.readNamespacedPodLog(req.params.podName, req.params.namespace, {})).response;
     if (response.statusCode !== 200) {
         return res.json({

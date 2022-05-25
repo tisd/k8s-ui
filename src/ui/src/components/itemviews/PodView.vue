@@ -1,6 +1,51 @@
 <template>
   <div class="resource-view">
     <n-card :title="pod.metadata.name" v-if="pod && pod.metadata">
+      <template #header-extra>
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <n-button style="font-size: 24px; margin-left: 5px;">
+              <n-icon>
+                <reader />
+              </n-icon>
+            </n-button>
+          </template>
+          Pod logs
+        </n-tooltip>
+
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <n-button style="font-size: 24px; margin-left: 5px;">
+              <n-icon>
+                <terminal />
+              </n-icon>
+            </n-button>
+          </template>
+          Pod shell
+        </n-tooltip>
+
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <n-button style="font-size: 24px; margin-left: 5px;">
+              <n-icon>
+                <pencil />
+              </n-icon>
+            </n-button>
+          </template>
+          Edit
+        </n-tooltip>
+
+        <n-tooltip trigger="hover">
+          <template #trigger>
+            <n-button style="font-size: 24px; margin-left: 5px;">
+              <n-icon>
+                <trash />
+              </n-icon>
+            </n-button>
+          </template>
+          Delete
+        </n-tooltip>
+      </template>
       <n-space>
         <n-statistic label="Name" :value="pod.metadata.name" />
         <n-statistic label="Namespace" :value="pod.metadata.namespace" />
@@ -53,7 +98,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { storeToRefs } from "pinia"
-import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem } from 'naive-ui'
+import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem, NButton, NIcon, NTooltip } from 'naive-ui'
+import { Trash, Pencil, TerminalOutline as Terminal, ReaderOutline as Reader } from '@vicons/ionicons5'
 import { useResourcesStore } from '@/stores/resources'
 import { useRoute } from 'vue-router'
 import { getPod, getPodEvents } from '../../services/MainService'
@@ -68,6 +114,13 @@ export default defineComponent({
     NTable,
     NTimeline,
     NTimelineItem,
+    NButton,
+    NIcon,
+    Trash,
+    Pencil,
+    Terminal,
+    Reader,
+    NTooltip
   },
   methods: {
     moment

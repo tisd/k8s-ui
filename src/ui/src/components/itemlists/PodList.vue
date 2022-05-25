@@ -27,7 +27,7 @@
 import { h, defineComponent, ref } from 'vue'
 import { NTag, NAnchorLink, NButton, NIcon, NSpace, NDataTable, NCard, NSelect, NDrawer, NDrawerContent, NLog, type SelectOption, type DrawerPlacement } from 'naive-ui'
 import { useResourcesStore } from '@/stores/resources'
-import { getNamespaces, getPods, getPodLogs } from "../services/MainService"
+import { getNamespaces, getPods, getPodLogs } from "../../services/MainService"
 import { storeToRefs } from "pinia"
 import { Refresh as RefreshIcon } from '@vicons/ionicons5'
 

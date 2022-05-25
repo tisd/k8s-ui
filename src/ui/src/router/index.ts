@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/pods',
       name: 'pods',
-      component: () => import('@/components/PodList.vue')
+      component: () => import('@/components/itemlists/PodList.vue')
     },
     {
       path: '/pods/:namespace/:podName',
@@ -27,22 +27,22 @@ const router = createRouter({
     {
       path: '/deployments',
       name: 'deployments',
-      component: () => import('@/components/DeploymentList.vue')
+      component: () => import('@/components/itemlists/DeploymentList.vue')
     },
     {
       path: '/services',
       name: 'services',
-      component: () => import('@/components/ServiceList.vue')
+      component: () => import('@/components/itemlists/ServiceList.vue')
     },
     {
       path: '/nodes',
       name: 'nodes',
-      component: () => import('@/components/NodeList.vue')
+      component: () => import('@/components/itemlists/NodeList.vue')
     },
     {
       path: '/namespaces',
       name: 'namespaces',
-      component: () => import('@/components/NamespaceList.vue')
+      component: () => import('@/components/itemlists/NamespaceList.vue')
     },
     {
       path: '/about',
