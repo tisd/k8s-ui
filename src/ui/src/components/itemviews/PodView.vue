@@ -1,6 +1,6 @@
 <template>
   <div class="resource-view">
-    <n-card :title="pod.metadata.name" v-if="pod && pod.metadata">
+    <n-card :title="pod.metadata.name" v-if="pod?.metadata">
       <template #header-extra>
         <n-tooltip trigger="hover">
           <template #trigger>
@@ -86,10 +86,26 @@
       </div>
     </n-card>
     <br>
-    <n-card title="Events" v-if="podEvents && podEvents.length">
+    <n-card title="Containers" v-if="pod?.spec?.containers?.length">
+      <n-space>
+        <div v-for="container in pod.spec.containers">
+          <n-icon color="#0e7a0d">
+            <square />
+          </n-icon>
+          <n-space>
+            <n-statistic label="Name" :value="container.name" />
+            <n-statistic label="Image" :value="container.image" />
+            <n-statistic label="ImagePullPolicy" :value="container.imagePullPolicy" />
+          </n-space>
+        </div>
+      </n-space>
+    </n-card>
+    <br>
+    <n-card title="Events" v-if="podEvents?.length">
       <n-timeline>
-        <n-timeline-item v-for="e in podEvents" type="success" :time="moment(e.firstTimestamp).fromNow()"
-          :content="e.message" />
+        <n-timeline-item v-for="e in podEvents" type="success" :time="moment(e.firstTimestamp).fromNow()">
+          {{ e.message }}
+        </n-timeline-item>
       </n-timeline>
     </n-card>
   </div>
@@ -99,7 +115,7 @@
 import { defineComponent } from 'vue'
 import { storeToRefs } from "pinia"
 import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem, NButton, NIcon, NTooltip } from 'naive-ui'
-import { Trash, Pencil, TerminalOutline as Terminal, ReaderOutline as Reader } from '@vicons/ionicons5'
+import { Trash, Pencil, TerminalOutline as Terminal, ReaderOutline as Reader, Square } from '@vicons/ionicons5'
 import { useResourcesStore } from '@/stores/resources'
 import { useRoute } from 'vue-router'
 import { getPod, getPodEvents } from '../../services/MainService'
@@ -120,7 +136,8 @@ export default defineComponent({
     Pencil,
     Terminal,
     Reader,
-    NTooltip
+    NTooltip,
+    Square,
   },
   methods: {
     moment
