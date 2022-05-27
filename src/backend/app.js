@@ -6,7 +6,7 @@ const k8s = require('@kubernetes/client-node');
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
 
-app.use(cors());
+app.use(cors('https://tisd-k8s-ui-rp9x5gxgcp6q5-3000.githubpreview.dev'));
 
 const coreV1Api = kc.makeApiClient(k8s.CoreV1Api);
 const appsV1Api = kc.makeApiClient(k8s.AppsV1Api);

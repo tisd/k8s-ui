@@ -1,9 +1,11 @@
 import { useResourcesStore } from '@/stores/resources'
 import moment from 'moment';
 
+const baseUrl = 'https://tisd-k8s-ui-rp9x5gxgcp6q5-7000.githubpreview.dev'
+
 export function getPods(namespace: string) {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/pod").then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/pod").then(response => response.json()).then(response => {
 
     if (!response.error) {
       resources.$patch({
@@ -29,7 +31,7 @@ export function getPods(namespace: string) {
 
 export function getPod(namespace: string, name: string) {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/pod/" + namespace + "/" + name).then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/pod/" + namespace + "/" + name).then(response => response.json()).then(response => {
     if (!response.error) {
       resources.$patch({
         pod: response.data
@@ -40,7 +42,7 @@ export function getPod(namespace: string, name: string) {
 
 export function getPodEvents(namespace: string, name: string) {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/pod/" + namespace + "/" + name + "/events").then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/pod/" + namespace + "/" + name + "/events").then(response => response.json()).then(response => {
     if (!response.error) {
       resources.$patch({
         podEvents: response.data.filter(event => event.involvedObject.name === name)
@@ -51,7 +53,7 @@ export function getPodEvents(namespace: string, name: string) {
 
 export function getDeployments(namespace: string) {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/deployment").then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/deployment").then(response => response.json()).then(response => {
 
     if (!response.error) {
       resources.$patch({
@@ -80,7 +82,7 @@ export function getDeployments(namespace: string) {
 
 export function getDeployment(namespace: string, name: string) {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/deployment/" + namespace + "/" + name).then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/deployment/" + namespace + "/" + name).then(response => response.json()).then(response => {
     if (!response.error) {
       console.log(response.data);
       resources.$patch({
@@ -92,7 +94,7 @@ export function getDeployment(namespace: string, name: string) {
 
 export function getServices() {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/service").then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/service").then(response => response.json()).then(response => {
     if (!response.error) {
       resources.$patch({
         serviceList: response.data
@@ -103,7 +105,7 @@ export function getServices() {
 
 export function getNodes() {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/node").then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/node").then(response => response.json()).then(response => {
 
     if (!response.error) {
       resources.$patch({
@@ -127,7 +129,7 @@ export function getNodes() {
 
 export function getNamespaces() {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/namespace").then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/namespace").then(response => response.json()).then(response => {
 
     if (!response.error) {
       resources.$patch({
@@ -148,7 +150,7 @@ export function getNamespaces() {
 
 export function getPodLogs(podName: string, namespace: string) {
   const resources = useResourcesStore()
-  fetch("http://localhost:7000/v1/pod/" + namespace + "/" + podName + "/logs").then(response => response.json()).then(response => {
+  fetch(baseUrl + "/v1/pod/" + namespace + "/" + podName + "/logs").then(response => response.json()).then(response => {
 
     if (!response.error) {
       resources.$patch({
