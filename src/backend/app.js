@@ -6,7 +6,7 @@ const k8s = require('@kubernetes/client-node');
 const kc = new k8s.KubeConfig();
 kc.loadFromDefault();
 
-app.use(cors('https://tisd-k8s-ui-rp9x5gxgcp6q5-3000.githubpreview.dev'));
+app.use(cors());
 
 const coreV1Api = kc.makeApiClient(k8s.CoreV1Api);
 const appsV1Api = kc.makeApiClient(k8s.AppsV1Api);
@@ -50,6 +50,21 @@ app.get('/v1/pod/:namespace/:podName/', async (req, res) => {
         return res.json({
             error: true,
             message: 'Error fetching pod'
+        });
+    }
+
+    res.json({
+        error: false,
+        data: response.body
+    });
+});
+
+app.delete('/v1/pod/:namespace/:podName/', async (req, res) => {
+    const response = (await coreV1Api.deleteNamespacedPod(req.params.podName, req.params.namespace, {})).response;
+    if (response.statusCode !== 200) {
+        return res.json({
+            error: true,
+            message: 'Error deleting pod'
         });
     }
 

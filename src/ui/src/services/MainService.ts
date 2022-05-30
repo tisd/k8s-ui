@@ -1,7 +1,7 @@
 import { useResourcesStore } from '@/stores/resources'
 import moment from 'moment';
 
-const baseUrl = 'https://tisd-k8s-ui-rp9x5gxgcp6q5-7000.githubpreview.dev'
+const baseUrl = 'http://localhost:7000'
 
 export function getPods(namespace: string) {
   const resources = useResourcesStore()
@@ -13,7 +13,7 @@ export function getPods(namespace: string) {
         pods: response.data.filter(pod => namespace === 'all' || pod.metadata.namespace === namespace).map(item => {
           return {
             name: item.metadata.name,
-            ready: item.status.containerStatuses.filter(container => container.ready).length + "/" + item.status.containerStatuses.length,
+            ready: item.status.containerStatuses?.filter(container => container.ready).length + "/" + item.status.containerStatuses?.length,
             age: moment(item.metadata.creationTimestamp).fromNow(),
             namespace: item.metadata.namespace,
             status: item.status.phase,
@@ -36,6 +36,16 @@ export function getPod(namespace: string, name: string) {
       resources.$patch({
         pod: response.data
       })
+    }
+  })
+}
+
+export function deletePod(namespace: string, name: string) {
+  fetch(baseUrl + "/v1/pod/" + namespace + "/" + name, {
+    method: 'DELETE'
+  }).then(response => response.json()).then(response => {
+    if (!response.error) {
+      getPods(namespace)
     }
   })
 }
