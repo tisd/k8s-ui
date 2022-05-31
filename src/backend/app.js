@@ -45,18 +45,18 @@ app.get('/v1/pod/:namespace/:podName/logs', async (req, res) => {
 });
 
 app.get('/v1/pod/:namespace/:podName/', async (req, res) => {
-    const response = (await coreV1Api.readNamespacedPod(req.params.podName, req.params.namespace)).response;
-    if (response.statusCode !== 200) {
+    try {
+        const response = (await coreV1Api.readNamespacedPod(req.params.podName, req.params.namespace)).response;
+        res.json({
+            error: false,
+            data: response.body
+        });
+    } catch (error) {
         return res.json({
             error: true,
             message: 'Error fetching pod'
         });
     }
-
-    res.json({
-        error: false,
-        data: response.body
-    });
 });
 
 app.delete('/v1/pod/:namespace/:podName/', async (req, res) => {

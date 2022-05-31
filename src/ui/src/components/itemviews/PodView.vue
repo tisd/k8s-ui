@@ -109,11 +109,14 @@
         </n-timeline-item>
       </n-timeline>
     </n-card>
+    <n-card>
+      <v-ace-editor v-model:value="content" lang="css" @init="editorInit" theme="chrome" style="height: 300px" />
+    </n-card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, reactive, toRefs } from 'vue'
 import { storeToRefs } from "pinia"
 import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem, NButton, NIcon, NTooltip, useDialog } from 'naive-ui'
 import { Trash, Pencil, TerminalOutline as Terminal, ReaderOutline as Reader, Square } from '@vicons/ionicons5'
@@ -122,6 +125,7 @@ import { useRoute } from 'vue-router'
 import { getPod, deletePod, getPodEvents } from '../../services/MainService'
 import moment from 'moment'
 import router from '@/router'
+import { VAceEditor } from "vue3-ace-editor";
 
 export default defineComponent({
   components: {
@@ -140,11 +144,18 @@ export default defineComponent({
     Reader,
     NTooltip,
     Square,
+    VAceEditor,
   },
   methods: {
     moment
   },
   setup() {
+    const data = reactive({
+      content: "",
+    });
+
+    const editorInit = () => { };
+
     const route = useRoute()
     const resources = useResourcesStore()
     const { pod, podEvents } = storeToRefs(resources)
@@ -156,6 +167,8 @@ export default defineComponent({
     return {
       pod,
       podEvents,
+      ...toRefs(data),
+      editorInit,
       handleDeletePod(podNamespace: string, podName: string) {
         dialog.warning({
           title: 'Confirm',
