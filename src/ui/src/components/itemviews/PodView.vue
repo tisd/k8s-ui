@@ -110,13 +110,15 @@
       </n-timeline>
     </n-card>
     <n-card>
-      <v-ace-editor v-model:value="content" lang="css" @init="editorInit" theme="chrome" style="height: 300px" />
+      <codemirror v-model="code" placeholder="Code gose here..." :style="{ height: '400px' }" :autofocus="true"
+        :indent-with-tab="true" :tabSize="2" :extensions="extensions" @ready="log('ready', $event)"
+        @change="log('change', $event)" @focus="log('focus', $event)" @blur="log('blur', $event)" />
     </n-card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { storeToRefs } from "pinia"
 import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem, NButton, NIcon, NTooltip, useDialog } from 'naive-ui'
 import { Trash, Pencil, TerminalOutline as Terminal, ReaderOutline as Reader, Square } from '@vicons/ionicons5'
@@ -125,7 +127,9 @@ import { useRoute } from 'vue-router'
 import { getPod, deletePod, getPodEvents } from '../../services/MainService'
 import moment from 'moment'
 import router from '@/router'
-import { VAceEditor } from "vue3-ace-editor";
+import { Codemirror } from 'vue-codemirror'
+import { json } from '@codemirror/lang-json'
+import { oneDark } from '@codemirror/theme-one-dark'
 
 export default defineComponent({
   components: {
@@ -144,17 +148,14 @@ export default defineComponent({
     Reader,
     NTooltip,
     Square,
-    VAceEditor,
+    Codemirror,
   },
   methods: {
     moment
   },
   setup() {
-    const data = reactive({
-      content: "",
-    });
-
-    const editorInit = () => { };
+    const code = ref(`console.log('Hello, world!')`)
+    const extensions = [json(), oneDark]
 
     const route = useRoute()
     const resources = useResourcesStore()
@@ -167,8 +168,9 @@ export default defineComponent({
     return {
       pod,
       podEvents,
-      ...toRefs(data),
-      editorInit,
+      code,
+      extensions,
+      log: console.log,
       handleDeletePod(podNamespace: string, podName: string) {
         dialog.warning({
           title: 'Confirm',
