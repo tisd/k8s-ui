@@ -37,7 +37,8 @@
 
         <n-tooltip trigger="hover">
           <template #trigger>
-            <n-button style="font-size: 24px; margin-left: 5px;">
+            <n-button @click="handleDeletePod(pod.metadata.namespace, pod.metadata.name)"
+              style="font-size: 24px; margin-left: 5px;">
               <n-icon>
                 <trash />
               </n-icon>
@@ -108,18 +109,27 @@
         </n-timeline-item>
       </n-timeline>
     </n-card>
+    <n-card>
+      <codemirror v-model="code" placeholder="Code gose here..." :style="{ height: '400px' }" :autofocus="true"
+        :indent-with-tab="true" :tabSize="2" :extensions="extensions" @ready="log('ready', $event)"
+        @change="log('change', $event)" @focus="log('focus', $event)" @blur="log('blur', $event)" />
+    </n-card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import { storeToRefs } from "pinia"
-import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem, NButton, NIcon, NTooltip } from 'naive-ui'
+import { NSpace, NCard, NStatistic, NTag, NTable, NTimeline, NTimelineItem, NButton, NIcon, NTooltip, useDialog } from 'naive-ui'
 import { Trash, Pencil, TerminalOutline as Terminal, ReaderOutline as Reader, Square } from '@vicons/ionicons5'
 import { useResourcesStore } from '@/stores/resources'
 import { useRoute } from 'vue-router'
-import { getPod, getPodEvents } from '../../services/MainService'
+import { getPod, deletePod, getPodEvents } from '../../services/MainService'
 import moment from 'moment'
+import router from '@/router'
+import { Codemirror } from 'vue-codemirror'
+import { json } from '@codemirror/lang-json'
+import { oneDark } from '@codemirror/theme-one-dark'
 
 export default defineComponent({
   components: {
@@ -138,20 +148,45 @@ export default defineComponent({
     Reader,
     NTooltip,
     Square,
+    Codemirror,
   },
   methods: {
     moment
   },
   setup() {
+    const code = ref(`console.log('Hello, world!')`)
+    const extensions = [json(), oneDark]
+
     const route = useRoute()
     const resources = useResourcesStore()
     const { pod, podEvents } = storeToRefs(resources)
     getPod(route.params.namespace, route.params.podName)
     getPodEvents(route.params.namespace, route.params.podName)
 
+    const dialog = useDialog()
+
     return {
       pod,
       podEvents,
+      code,
+      extensions,
+      log: console.log,
+      handleDeletePod(podNamespace: string, podName: string) {
+        dialog.warning({
+          title: 'Confirm',
+          content: 'Are you sure you want to delete this pod?',
+          positiveText: 'Sure',
+          negativeText: 'Not Sure',
+          onPositiveClick: () => {
+            deletePod(podNamespace, podName)
+            router.push('/pods')
+          },
+          onNegativeClick: () => {
+            // message.error('Not Sure')
+          }
+        })
+      },
+
     }
   }
 })
